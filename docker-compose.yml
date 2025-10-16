@@ -18,17 +18,18 @@ services:
       - app-network
 
   frontend:
-    build: 
-      context: .
-      dockerfile: frontend/Dockerfile
+    build:
+      # This context should point to your React app's directory
+      context: ./frontend/deep-context-dashboard
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
+      # Map container port 80 to host port 3000
+      - "3000:80"
     depends_on:
       - backend
     restart: unless-stopped
     networks:
       - app-network
-
 networks:
   app-network:
     driver: bridge
