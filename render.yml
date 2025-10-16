@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: GOOGLE_GEMINI_API_KEY
+        fromSecret: true
+      - key: APIFY_API_TOKEN
+        fromSecret: true
+    healthCheckPath: /health
+    disk:
+      name: logs
+      mountPath: /app/logs
+      sizeGB: 1
+
+  - type: web
+    name: frontend
+    env: docker
+    dockerfilePath: ./frontend/deep-context-dashboard/Dockerfile
+    dockerContext: ./frontend/deep-context-dashboard
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: backend
+          property: url
