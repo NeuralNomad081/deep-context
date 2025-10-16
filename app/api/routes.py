@@ -1,4 +1,5 @@
 import time
+from httpx import post
 import structlog
 from fastapi import APIRouter, HTTPException
 from typing import List
@@ -7,7 +8,8 @@ from app.config import settings
 from app.models.schemas import (
     AnalysisRequest,
     AnalysisResponse,
-    Platform
+    Platform,
+    PostContext
 )
 from app.services.platform_detector import PlatformDetector
 from app.services.scraper_service import ScraperService
@@ -73,6 +75,7 @@ async def analyze_url(request: AnalysisRequest) -> AnalysisResponse:
         response = sentiment_service.create_summary_response(
             post_url=url_str,
             platform=platform,
+            post_context=post_context,
             sentiments=all_sentiments,
             processing_time=processing_time,
             batches_count=len(batch_results)
@@ -119,8 +122,9 @@ async def get_demo_analysis() -> AnalysisResponse:
     return AnalysisResponse(
         status="completed",
         timestamp=datetime.now(),
-        postUrl="https://www.youtube.com/watch?v=demo",
+        postUrl="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         platform=Platform.YOUTUBE,
+        postContext=demo_post_context,  # <-- Added the missing field
         summary=summary,
         topComments={
             "Supportive/Empathetic": ["Great explanation! Very helpful."],
@@ -135,6 +139,7 @@ async def get_demo_analysis() -> AnalysisResponse:
         processingTime=0.5,
         batchesProcessed=1
     )
+
 
 @router.get("/platforms")
 async def get_supported_platforms() -> dict:

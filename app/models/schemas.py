@@ -71,6 +71,7 @@ class AnalysisResponse(BaseModel):
     timestamp: datetime
     postUrl: str
     platform: Platform
+    postContext: PostContext
     summary: SentimentSummary
     topComments: Dict[str, List[str]]
     allComments: Dict[str, List[str]]

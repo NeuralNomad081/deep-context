@@ -1,3 +1,4 @@
+import platform
 import httpx
 import structlog
 from typing import List, Tuple, Dict
@@ -109,33 +110,37 @@ class ScraperService:
         post_data = await self._make_apify_request(
             "apidojo~twitter-scraper-lite",
             {
-                "maxItems": settings.TWITTER_MAX_ITEMS,
+                "maxItems": 1,
                 "startUrls": [url]
             }
         )
 
         # Get post ID and replies
-        post = post_data[0] if post_data else {}
+        post = post_data[0] if post_data and isinstance(post_data[0], dict) else {}
         post_id = post.get("id")
-        
-        if post_id:
-            reply_data = await self._make_apify_request(
-                "kaitoeasyapi~twitter-reply",
-                {"conversation_ids": [post_id]}
-            )
-        else:
-            reply_data = []
 
-        # Create post context
+        # If we can't get an ID, we can't get replies, so we exit.
+        if not post_id:
+            return PostContext(platform=Platform.TWITTER, text=post.get("fullText")), []
+        reply_data = await self._make_apify_request(
+            "kaitoeasyapi~twitter-reply",
+            {   "conversation_ids": [post_id], 
+                "max_items_per_conversation": settings.TWITTER_MAX_ITEMS
+            }
+            )
+        main_tweet_details = reply_data[0] if reply_data and isinstance(reply_data[0], dict) else post
+        comments_only = reply_data[1:] if len(reply_data) > 1 else []
+
+        # Create post context from the detailed main tweet data
         post_context = PostContext(
             platform=Platform.TWITTER,
-            text=post.get("fullText"),
-            media=post.get("media", [])
+            text=main_tweet_details.get("fullText") or main_tweet_details.get("text"),
+            media=main_tweet_details.get("media", [])
         )
 
-        # Process comments
+        # Process ONLY the comments
         cleaned_comments = CommentCleaner.process_comments(
-            reply_data, Platform.TWITTER
+            comments_only, Platform.TWITTER
         )
 
         return post_context, cleaned_comments

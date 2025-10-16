@@ -178,6 +178,7 @@ class SentimentService:
         self,
         post_url: str,
         platform: Platform,
+        post_context: PostContext,
         sentiments: List[CommentSentiment],
         processing_time: float,
         batches_count: int
@@ -216,6 +217,7 @@ class SentimentService:
             timestamp=datetime.now(),
             postUrl=post_url,
             platform=platform,
+            postContext=post_context,
             summary=summary,
             topComments=top_comments,
             allComments=all_comments,

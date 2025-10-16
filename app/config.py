@@ -32,15 +32,15 @@ class Settings(BaseSettings):
     TWITTER_MAX_ITEMS: int = 100
     INSTAGRAM_MAX_COMMENTS: int = 100
     
-    # Optional Integrations
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_PASSWORD: Optional[str] = None
+    # # Optional Integrations
+    # REDIS_HOST: str = "localhost"
+    # REDIS_PORT: int = 6379
+    # REDIS_DB: int = 0
+    # REDIS_PASSWORD: Optional[str] = None
     
-    GOOGLE_SHEETS_CREDENTIALS_FILE: str = "credentials.json"
-    GOOGLE_SHEETS_SPREADSHEET_ID: Optional[str] = None
-    GOOGLE_SHEETS_SHEET_NAME: str = "Sheet1"
+    # GOOGLE_SHEETS_CREDENTIALS_FILE: str = "credentials.json"
+    # GOOGLE_SHEETS_SPREADSHEET_ID: Optional[str] = None
+    # GOOGLE_SHEETS_SHEET_NAME: str = "Sheet1"
     
     class Config:
         env_file = ".env"
